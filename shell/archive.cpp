@@ -1,6 +1,13 @@
 #include "archive.h"
 
-archive::archive()
+archive::archive(string n,string o)
 {
+    string temp;
+    while(!n.empty())
+    {
+        if (n.front()== ".")
+        {
 
+        }
+    }
 }

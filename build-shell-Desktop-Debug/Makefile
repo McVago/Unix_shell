@@ -51,9 +51,13 @@ OBJECTS_DIR   = ./
 ####### Files
 
 SOURCES       = ../shell/main.cpp \
-		../shell/file_explorer.cpp moc_file_explorer.cpp
+		../shell/file_explorer.cpp \
+		../shell/directory.cpp \
+		../shell/archive.cpp moc_file_explorer.cpp
 OBJECTS       = main.o \
 		file_explorer.o \
+		directory.o \
+		archive.o \
 		moc_file_explorer.o
 DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/common/unix.conf \
@@ -182,8 +186,12 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/features/exceptions.prf \
 		/usr/lib/qt/mkspecs/features/yacc.prf \
 		/usr/lib/qt/mkspecs/features/lex.prf \
-		../shell/shell.pro ../shell/file_explorer.h ../shell/main.cpp \
-		../shell/file_explorer.cpp
+		../shell/shell.pro ../shell/file_explorer.h \
+		../shell/directory.h \
+		../shell/archive.h ../shell/main.cpp \
+		../shell/file_explorer.cpp \
+		../shell/directory.cpp \
+		../shell/archive.cpp
 QMAKE_TARGET  = shell
 DESTDIR       = 
 TARGET        = shell
@@ -473,8 +481,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../shell/file_explorer.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../shell/main.cpp ../shell/file_explorer.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../shell/file_explorer.h ../shell/directory.h ../shell/archive.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../shell/main.cpp ../shell/file_explorer.cpp ../shell/directory.cpp ../shell/archive.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../shell/file_explorer.ui $(DISTDIR)/
 
 
@@ -542,6 +550,13 @@ main.o: ../shell/main.cpp ../shell/file_explorer.h
 file_explorer.o: ../shell/file_explorer.cpp ../shell/file_explorer.h \
 		ui_file_explorer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o file_explorer.o ../shell/file_explorer.cpp
+
+directory.o: ../shell/directory.cpp ../shell/directory.h \
+		../shell/archive.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o directory.o ../shell/directory.cpp
+
+archive.o: ../shell/archive.cpp ../shell/archive.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o archive.o ../shell/archive.cpp
 
 moc_file_explorer.o: moc_file_explorer.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_file_explorer.o moc_file_explorer.cpp
