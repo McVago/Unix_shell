@@ -1,0 +1,19 @@
+#ifndef DIRECTORY_H
+#define DIRECTORY_H
+#include <string>
+#include <vector>
+#include <archive.h>
+using namespace std;
+class directory
+{
+public:
+    //Public Functions
+    directory();
+    
+private:
+    string owner;
+    vector<archive> archives;
+    vector<directory> directories;
+};
+
+#endif // DIRECTORY_H

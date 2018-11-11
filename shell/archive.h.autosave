@@ -1,0 +1,15 @@
+#ifndef ARCHIVE_H
+#define ARCHIVE_H
+#include <string>
+using namespace std;
+
+class archive
+{
+public:
+    archive();
+private:
+    string name;
+    string type;
+};
+
+#endif // ARCHIVE_H
