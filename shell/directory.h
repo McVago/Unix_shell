@@ -15,8 +15,8 @@ public:
 private:
     string name;
     string owner;
-    vector<archive> archives;
-    vector<directory> directories;
+    vector<archive*> archives;
+    vector<directory*> directories;
 };
 
 #endif // DIRECTORY_H
