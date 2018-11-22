@@ -2,6 +2,8 @@
 #include "archive.h"
 #include "directory.h"
 #include "fstream"
+#include <unistd.h>
+#include <ncurses.h>
 #include <QApplication>
 #include <iostream>
 using namespace std;
@@ -14,6 +16,7 @@ string encrypt(string password, string key)
         password[i] ^= key[i];
     return password;
 }
+
 string decrypt(string password, string key)
 {
     return encrypt(password,key);
@@ -33,8 +36,12 @@ void loadusers(vector<string> &users,vector<string> &passwords)
     usersfile.open("passwords.txt");
     if (usersfile.is_open())
     {
+        size_t i = 0;
         while (getline(usersfile,line))
-            passwords.push_back(line);
+        {
+            passwords.push_back(encrypt(line,users[i]));
+            i++;
+        }
     }
     usersfile.close();
 
@@ -49,22 +56,150 @@ void saveusers(vector<string> users, vector<string> passwords)
         file << users[i];
     }
     file.close();
-    file.open("passwords.txt");
-    for(size_t i = 0; i < users.size(); i++)
+    fstream passfile;
+    passfile.open("passwords.txt");
+    for(size_t i = 0; i < passwords.size(); i++)
     {
-        file << passwords[i];
+        passfile << encrypt(passwords[i],users[i]);
     }
-    file.close();
+    passfile.close();
 }
+/*  FUNCTION FOR THE TAB AUTOCOMPLETE
+int kbhit(int key)
+{
+    int ch = getch();
+    if (ch == key)
+    {
+        ungetch(ch);
+        return 1;
+    }
+    else
+        return 0;
+}
+*/
+bool adduser(vector<string> &users,string newuser)
+{
+    bool flag = 0;
+    for(vector<string>::iterator i = users.begin(); i != users.end(); i++)
+    {
+        if(*i == newuser)
+            flag = 1;
+    }
+    if(!flag)
+    {
+        users.push_back(newuser);
+        return 1;
+    }
+    return 0;
 
+}
+void createuser(vector<string> &users,vector<string> &passwords)
+{
+    string newuser;
+    string temp;
+    cout << "Enter the name of the new user:\n";
+    getline(cin,newuser);
+    if(!adduser(users,newuser))
+    {
+        cout << "User already exists\n";
+        return;
+    }
+    cout << "Enter your password\n";
+    getline(cin,temp);
+    string password = encrypt(temp,newuser);
+    passwords.push_back(password);
+    cout << "User created\n";
+    return;
+}
+enum string_code
+{
+    man,
+    mkdir,
+    rm,
+    vim,
+    ls,
+    cd,
+    passwd,
+    cp,
+    mv,
+    exitt,
+    date,
+    clearr,
+    cat,
+    chmod,
+};
+string_code hashit(string code)
+{
+    if (code == "man") return man;
+    if (code == "mkdir") return mkdir;
+    if (code == "rm") return vim;
+    if (code == "ls") return ls;
+    if (code == "cd") return cd;
+    if (code == "passwd") return passwd;
+    if (code == "cp") return cp;
+    if (code == "mv") return mv;
+    if (code == "exit") return exitt;
+    if (code == "date") return date;
+    if (code == "clear") return clearr;
+    if (code == "cat") return cat;
+    if (code == "chmod") return chmod;
+}
 int main(int argc, char *argv[])
 {
     //QApplication a(argc, argv);
     //File_Explorer w;
     //w.show();
     //a.exec();
+
+
     vector<string> users;
     vector<string> passwords;
+    vector<string> commands;
+    string current_line;
     loadusers(users,passwords);
+    directory computer("sda1","root");
+    if (users.empty()){
+        createuser(users,passwords);
+        saveusers(users,passwords);
+    }
+    else
+    {
+        cout << "Users:\n";
+        for (vector<string>::iterator i = users.begin(); i != users.end(); i++)
+            cout << *i << endl;
+        cout << "Passwords:\n";
+        size_t j = 0;
+        string nepe = passwords[0];
+        for (vector<string>::iterator i = passwords.begin(); i != passwords.end(); i++,j++)
+            cout << *i << endl;
+    }
+    //saveusers(users,passwords);
+    //computer.adddirectory(users[0],users[0]);
+    directory* currentdir;
+    while(1)
+    {
+        string temp;
+        char nepe = 'D';
+        int pos = 0;
+        getline(cin,current_line);
+        pos = current_line.find(" ",0);
+        temp = current_line.substr(0,pos);
+        cout << "temp is " << temp << endl;
+
+        switch(hashit(temp))
+        {
+            case man:
+                cout << "";
+                break;
+            case mkdir:
+
+                //currentdir->adddirectory()
+                break;
+                
+
+        }
+    }
+
+
 
 }

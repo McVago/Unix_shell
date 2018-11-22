@@ -38,7 +38,7 @@ DISTNAME      = shell1.0.0
 DISTDIR = /home/mcvago/Documents/Shell/Shell/build-shell-Desktop-Debug/.tmp/shell1.0.0
 LINK          = g++
 LFLAGS        = 
-LIBS          = $(SUBLIBS) -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -lncurses -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -544,7 +544,9 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 
 ####### Compile
 
-main.o: ../shell/main.cpp ../shell/file_explorer.h
+main.o: ../shell/main.cpp ../shell/file_explorer.h \
+		../shell/archive.h \
+		../shell/directory.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../shell/main.cpp
 
 file_explorer.o: ../shell/file_explorer.cpp ../shell/file_explorer.h \
