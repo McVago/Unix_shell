@@ -6,6 +6,7 @@
 #include <ncurses.h>
 #include <QApplication>
 #include <iostream>
+#include "consolereader.h"
 using namespace std;
 string encrypt(string password, string key)
 {
@@ -113,7 +114,6 @@ void createuser(vector<string> &users,vector<string> &passwords)
 }
 enum string_code
 {
-    nothing,
     man,
     mkdir,
     rm,
@@ -131,7 +131,6 @@ enum string_code
 };
 string_code hashit(string code)
 {
-    if (code == "") return nothing;
     if (code == "man") return man;
     if (code == "mkdir") return mkdir;
     if (code == "rm") return vim;
@@ -146,27 +145,6 @@ string_code hashit(string code)
     if (code == "cat") return cat;
     if (code == "chmod") return chmod;
 }
-
-int kbhit(char key)
-{
-    int ch,r;
-
-    nodelay(stdscr,TRUE);
-    noecho();
-
-    ch = getch();
-    if (ch != key)
-        r = FALSE;
-    else
-    {
-        r = TRUE;
-        ungetch(ch);
-    }
-    echo();
-    nodelay(stdscr,FALSE);
-    return r;
-}
-
 int main(int argc, char *argv[])
 {
     //QApplication a(argc, argv);
@@ -199,59 +177,31 @@ int main(int argc, char *argv[])
     //saveusers(users,passwords);
     //computer.adddirectory(users[0],users[0]);
     directory* currentdir;
-    initscr();
-    noecho();
-    string temp;
+    ConsoleReader *consoleReader = new ConsoleReader();
+    ConsoleReader::connect (consoleReader, SIGNAL (KeyPressed(char)), this, SLOT(OnConsoleKeyPressed(char)));
+
     while(1)
     {
-        char a;
-        string b;
-        a = getch();
-        if(a == 127)
+        string temp;
+        char nepe = 'D';
+        int pos = 0;
+        getline(cin,current_line);
+        pos = current_line.find(" ",0);
+        temp = current_line.substr(0,pos);
+        cout << "temp is " << temp << endl;
+        if(getch(KEY_UP))
+        switch(hashit(temp))
         {
-            if(!temp.empty())
-                temp.pop_back();
-            int y, x;
-            getyx(stdscr, y, x);
-            move(y, 0);
-            clrtoeol();
-            printw("%s",temp.c_str());
-            refresh();
+            case man:
+                cout << "";
+                break;
+            case mkdir:
+
+                //currentdir->adddirectory()
+                break;
+                
+
         }
-        if(a != 10 && a != 127)
-        {
-            temp += a;
-            printw("%c",a);
-            refresh();
-        }
-
-        if(a == 10)
-        {
-            string first,second,third,fourth;
-            size_t pos = temp.find(' ');
-            if(pos == 0)
-                first = temp;
-            else
-                first = temp.substr(0,pos);
-            switch(hashit(first))
-            {
-                case nothing:
-                    printw("Unknown command \n");
-                    temp.clear();
-                    break;
-                case man:
-                    printw("man commando :v");
-                    break;
-                case mkdir:
-                    printw("Mkdir commando :v");
-                    break;
-
-
-            }
-        }
-
-
-
     }
 
 
