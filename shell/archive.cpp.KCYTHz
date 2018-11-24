@@ -1,0 +1,20 @@
+#include "archive.h"
+
+archive::archive(string n,string o)
+{
+    string temp;
+    bool flag = 0;
+    while(!n.empty())
+    {
+        char c = n[0];
+        if ( c == '.')
+        {
+
+        }
+        if (!flag)
+        {
+            char* c2 = new char(c);
+            temp.append(c2);
+        }
+    }
+}
