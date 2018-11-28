@@ -7,16 +7,17 @@ using namespace std;
 class directory
 {
 public:
-    //Public Functions
     directory(string,string);
+    directory(string, string, directory*);
     void adddirectory(string,string);
     void addarchive(string,string);
-
-private:
-    string name;
-    string owner;
+    directory* changedir(string);
+    directory* parent;
     vector<archive*> archives;
     vector<directory*> directories;
+    string name;
+    string owner;
+
 };
 
 #endif // DIRECTORY_H

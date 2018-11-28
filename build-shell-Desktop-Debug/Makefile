@@ -15,7 +15,7 @@ CXX           = g++
 DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../shell -I. -isystem /usr/include/qt -isystem /usr/include/qt/QtWidgets -isystem /usr/include/qt/QtGui -isystem /usr/include/qt/QtCore -I. -isystem /usr/include/libdrm -I. -I/usr/lib/qt/mkspecs/linux-g++
+INCPATH       = -I../shell -I. -isystem /usr/include/boost -isystem /usr/include/qt -isystem /usr/include/qt/QtWidgets -isystem /usr/include/qt/QtGui -isystem /usr/include/qt/QtCore -I. -isystem /usr/include/libdrm -I. -I/usr/lib/qt/mkspecs/linux-g++
 QMAKE         = /usr/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -38,7 +38,7 @@ DISTNAME      = shell1.0.0
 DISTDIR = /home/mcvago/Documents/Shell/Shell/build-shell-Desktop-Debug/.tmp/shell1.0.0
 LINK          = g++
 LFLAGS        = 
-LIBS          = $(SUBLIBS) -lncurses -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -lncurses -L/usr/include/boost -lboost_system -lboost_chrono -lboost_thread -lboost_timer -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -53,11 +53,13 @@ OBJECTS_DIR   = ./
 SOURCES       = ../shell/main.cpp \
 		../shell/file_explorer.cpp \
 		../shell/directory.cpp \
-		../shell/archive.cpp moc_file_explorer.cpp
+		../shell/archive.cpp \
+		../shell/Node.cpp moc_file_explorer.cpp
 OBJECTS       = main.o \
 		file_explorer.o \
 		directory.o \
 		archive.o \
+		Node.o \
 		moc_file_explorer.o
 DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/common/unix.conf \
@@ -188,10 +190,12 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/features/lex.prf \
 		../shell/shell.pro ../shell/file_explorer.h \
 		../shell/directory.h \
-		../shell/archive.h ../shell/main.cpp \
+		../shell/archive.h \
+		../shell/Node.h ../shell/main.cpp \
 		../shell/file_explorer.cpp \
 		../shell/directory.cpp \
-		../shell/archive.cpp
+		../shell/archive.cpp \
+		../shell/Node.cpp
 QMAKE_TARGET  = shell
 DESTDIR       = 
 TARGET        = shell
@@ -481,8 +485,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../shell/file_explorer.h ../shell/directory.h ../shell/archive.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../shell/main.cpp ../shell/file_explorer.cpp ../shell/directory.cpp ../shell/archive.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../shell/file_explorer.h ../shell/directory.h ../shell/archive.h ../shell/Node.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../shell/main.cpp ../shell/file_explorer.cpp ../shell/directory.cpp ../shell/archive.cpp ../shell/Node.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../shell/file_explorer.ui $(DISTDIR)/
 
 
@@ -521,7 +525,7 @@ compiler_moc_header_clean:
 moc_file_explorer.cpp: ../shell/file_explorer.h \
 		moc_predefs.h \
 		/usr/bin/moc
-	/usr/bin/moc $(DEFINES) --include /home/mcvago/Documents/Shell/Shell/build-shell-Desktop-Debug/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/mcvago/Documents/Shell/Shell/shell -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/8.2.1 -I/usr/include/c++/8.2.1/x86_64-pc-linux-gnu -I/usr/include/c++/8.2.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include-fixed -I/usr/include ../shell/file_explorer.h -o moc_file_explorer.cpp
+	/usr/bin/moc $(DEFINES) --include /home/mcvago/Documents/Shell/Shell/build-shell-Desktop-Debug/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/mcvago/Documents/Shell/Shell/shell -I/usr/include/boost -I/usr/include/qt -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/8.2.1 -I/usr/include/c++/8.2.1/x86_64-pc-linux-gnu -I/usr/include/c++/8.2.1/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/8.2.1/include-fixed -I/usr/include ../shell/file_explorer.h -o moc_file_explorer.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -546,7 +550,9 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 
 main.o: ../shell/main.cpp ../shell/file_explorer.h \
 		../shell/archive.h \
-		../shell/directory.h
+		../shell/directory.h \
+		../shell/huffman.cpp \
+		../shell/Node.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../shell/main.cpp
 
 file_explorer.o: ../shell/file_explorer.cpp ../shell/file_explorer.h \
@@ -559,6 +565,9 @@ directory.o: ../shell/directory.cpp ../shell/directory.h \
 
 archive.o: ../shell/archive.cpp ../shell/archive.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o archive.o ../shell/archive.cpp
+
+Node.o: ../shell/Node.cpp ../shell/Node.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Node.o ../shell/Node.cpp
 
 moc_file_explorer.o: moc_file_explorer.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_file_explorer.o moc_file_explorer.cpp

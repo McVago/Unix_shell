@@ -7,7 +7,6 @@ class archive
 {
 public:
     archive(string, string);
-private:
     string name;
     string type;
     string owner;
