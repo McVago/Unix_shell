@@ -42,14 +42,7 @@ HEADERS += \
 
 FORMS += \
         file_explorer.ui
-INCLUDEPATH += /usr/include/boost
 LIBS += -lncurses
-
-
-LIBS += -L/usr/include/boost -lboost_system
-LIBS += -L/usr/include/boost  -lboost_chrono
-LIBS += -L/usr/include/boost  -lboost_thread
-LIBS += -L/usr/include/boost  -lboost_timer
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin

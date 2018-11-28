@@ -25,7 +25,14 @@ void directory::addarchive(string n,string o)
     archive* newarchive = new archive(n,o);
     archives.push_back(newarchive);
 }
-
+void directory::removedirectory(string n)
+{
+    for(vector<directory*>::iterator i = directories.begin(); i < directories.end(); i++)
+    {
+        if (n == (*i)->name)
+            directories.erase(i);
+    }
+}
 directory* directory::changedir(string name)
 {
     for(size_t i = 0; i<directories.size(); i++)

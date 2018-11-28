@@ -18,6 +18,7 @@ public:
     string name;
     string owner;
 
+    void removedirectory(string n);
 };
 
 #endif // DIRECTORY_H

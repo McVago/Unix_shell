@@ -10,8 +10,8 @@
 #include <sys/stat.h>
 #include "huffman.cpp"
 #include "Node.h"
-#include <boost/archive/binary_oarchive.hpp>
-#include <boost/archive/binary_iarchive.hpp>
+//#include <boost/archive/binary_oarchive.hpp>
+//#include <boost/archive/binary_iarchive.hpp>
 
 using namespace std;
 string encrypt(string password, string key)
@@ -369,7 +369,7 @@ int main(int argc, char *argv[])
             time_t T= time(NULL);
             vector<directory*> forls;
             vector<archive*> forls2;
-            Node root;
+            static Node root;
             struct  tm tm = *localtime(&T);
             int failed;
             fstream file,file2;
@@ -388,9 +388,10 @@ int main(int argc, char *argv[])
                     pos2 = temp.find(' ',pos);
                     second = temp.substr(pos2);
                     refresh();
+                    second.erase(second.begin());
                     if (second == "mkdir")
                     {
-                        printw("mkdir\nNAME\n\t\t mkdir - make directory\nSYNOPSIS\n\t\t mkdir [FILE]\nDESCRIPTION\n\t\t Create the DIRECTORY, if it does not already exist.");
+                        printw("\nmkdir\nNAME\n\t\t mkdir - make directory\nSYNOPSIS\n\t\t mkdir [FILE]\nDESCRIPTION\n\t\t Create the DIRECTORY, if it does not already exist.");
                         refresh();
                     }
                     if (second == "rm")
@@ -435,6 +436,7 @@ int main(int argc, char *argv[])
                     failed = remove(second.c_str());
                     if(-1 == failed)
                         printw("\nNo such file or directory");
+                    currentdir->removedirectory(second);
                     temp.clear();
                     printw("\n");
                     refresh();
